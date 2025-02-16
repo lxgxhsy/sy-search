@@ -9,7 +9,8 @@ import java.util.List;
 /**
  * 帖子数据库操作
  *
-  
+ * @author 诺诺
+
  */
 public interface PostMapper extends BaseMapper<Post> {
 
