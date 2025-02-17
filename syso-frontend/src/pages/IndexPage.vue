@@ -1,7 +1,7 @@
 <template>
   <div class="index-page">
     <a-input-search
-      v-model:value="searchParams.text"
+      v-model:value="searchText"
       placeholder="请输入搜索关键词"
       enter-button="搜索"
       size="large"
@@ -37,15 +37,6 @@ const userList = ref([]);
 
 const pictureList = ref([]);
 
-myAxios.post("post/list/page/vo", {}).then((res) => {
-  postList.value = res.records;
-});
-myAxios.post("user/list/page/vo", {}).then((res: any) => {
-  userList.value = res.records;
-});
-// myAxios.post("picture/list/page/vo", {}).then((res: any) => {
-//   pictureList.value = res.records;
-// });
 const router = useRouter();
 const route = useRoute();
 
@@ -69,6 +60,27 @@ const loadData = (params: any) => {
     message.error("类别为空");
     return;
   }
+  const postQuery = {
+    ...params,
+    searchText: params.text,
+  };
+  myAxios.post("post/list/page/vo", postQuery).then((res: any) => {
+    postList.value = res.records;
+  });
+  const userQuery = {
+    ...params,
+    userName: params.text,
+  };
+  myAxios.post("user/list/page/vo", userQuery).then((res: any) => {
+    userList.value = res.records;
+  });
+  const pictureQuery = {
+    ...params,
+    searchText: params.text,
+  };
+  myAxios.post("picture/list/page/vo", pictureQuery).then((res: any) => {
+    pictureList.value = res.records;
+  });
 };
 
 const searchParams = ref(initSearchParams);
@@ -83,7 +95,7 @@ watchEffect(() => {
 });
 
 const onSearch = (value: string) => {
-  alert(value);
+  // alert(value);
   router.push({
     query: {
       ...searchParams.value,
