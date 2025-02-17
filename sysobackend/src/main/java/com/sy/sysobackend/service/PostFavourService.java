@@ -11,7 +11,8 @@ import com.sy.sysobackend.model.entity.User;
 /**
  * 帖子收藏服务
  *
-  
+ * @author 诺诺
+
  */
 public interface PostFavourService extends IService<PostFavour> {
 
