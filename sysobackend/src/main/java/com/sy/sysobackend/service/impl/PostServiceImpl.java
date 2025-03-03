@@ -1,9 +1,16 @@
 package com.sy.sysobackend.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sysobackend.common.ErrorCode;
+import com.sy.sysobackend.constant.CommonConstant;
+import com.sy.sysobackend.exception.BusinessException;
+import com.sy.sysobackend.exception.ThrowUtils;
+import com.sy.sysobackend.mapper.PostFavourMapper;
+import com.sy.sysobackend.mapper.PostMapper;
+import com.sy.sysobackend.mapper.PostThumbMapper;
 import com.sy.sysobackend.model.dto.post.PostEsDTO;
 import com.sy.sysobackend.model.dto.post.PostQueryRequest;
 import com.sy.sysobackend.model.entity.Post;
@@ -12,26 +19,10 @@ import com.sy.sysobackend.model.entity.PostThumb;
 import com.sy.sysobackend.model.entity.User;
 import com.sy.sysobackend.model.vo.PostVO;
 import com.sy.sysobackend.model.vo.UserVO;
+import com.sy.sysobackend.service.PostService;
 import com.sy.sysobackend.service.UserService;
 import com.sy.sysobackend.utils.SqlUtils;
-import com.sy.sysobackend.constant.CommonConstant;
-import com.sy.sysobackend.exception.BusinessException;
-import com.sy.sysobackend.exception.ThrowUtils;
-import com.sy.sysobackend.mapper.PostFavourMapper;
-import com.sy.sysobackend.mapper.PostMapper;
-import com.sy.sysobackend.mapper.PostThumbMapper;
-import com.sy.sysobackend.service.PostService;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import cn.hutool.core.collection.CollUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -46,6 +37,11 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 帖子服务实现
@@ -304,6 +300,18 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         postVOPage.setRecords(postVOList);
         return postVOPage;
     }
+
+	@Override
+	public Page<PostVO> listPostVOByPage(PostQueryRequest postQueryRequest, HttpServletRequest request) {
+
+        int current = postQueryRequest.getCurrent();
+        int pageSize = postQueryRequest.getPageSize();
+
+        Page<Post> postPage = this.page(new Page<>(current, pageSize),
+                this.getQueryWrapper(postQueryRequest));
+        Page<PostVO> postVOPage = this.getPostVOPage(postPage, request);
+        return postVOPage;
+	}
 
 }
 

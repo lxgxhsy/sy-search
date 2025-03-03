@@ -1,11 +1,13 @@
 package com.sy.sysobackend.service.impl;
 
-import static com.sy.sysobackend.constant.UserConstant.USER_LOGIN_STATE;
-
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sysobackend.common.ErrorCode;
+import com.sy.sysobackend.constant.CommonConstant;
+import com.sy.sysobackend.exception.BusinessException;
+import com.sy.sysobackend.mapper.UserMapper;
 import com.sy.sysobackend.model.dto.user.UserQueryRequest;
 import com.sy.sysobackend.model.entity.User;
 import com.sy.sysobackend.model.enums.UserRoleEnum;
@@ -13,20 +15,19 @@ import com.sy.sysobackend.model.vo.LoginUserVO;
 import com.sy.sysobackend.model.vo.UserVO;
 import com.sy.sysobackend.service.UserService;
 import com.sy.sysobackend.utils.SqlUtils;
-import com.sy.sysobackend.constant.CommonConstant;
-import com.sy.sysobackend.exception.BusinessException;
-import com.sy.sysobackend.mapper.UserMapper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.sy.sysobackend.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现
@@ -270,4 +271,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 sortField);
         return queryWrapper;
     }
+
+	@Override
+	public Page<UserVO> listUserVOByPage(UserQueryRequest userQueryRequest) {
+
+        int current = userQueryRequest.getCurrent();
+        int pageSize = userQueryRequest.getPageSize();
+
+
+        Page<User> userPage = this.page(new Page<>(current, pageSize),
+                this.getQueryWrapper(userQueryRequest));
+        Page<UserVO> userVOPage = new Page<>(current, pageSize, userPage.getTotal());
+        List<UserVO> userVO = this.getUserVO(userPage.getRecords());
+        userVOPage.setRecords(userVO);
+        return userVOPage;
+	}
 }

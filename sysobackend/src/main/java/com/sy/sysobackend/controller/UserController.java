@@ -1,32 +1,21 @@
 package com.sy.sysobackend.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sy.sysobackend.annotation.AuthCheck;
 import com.sy.sysobackend.common.BaseResponse;
 import com.sy.sysobackend.common.DeleteRequest;
 import com.sy.sysobackend.common.ErrorCode;
 import com.sy.sysobackend.common.ResultUtils;
 import com.sy.sysobackend.config.WxOpenConfig;
+import com.sy.sysobackend.constant.UserConstant;
+import com.sy.sysobackend.exception.BusinessException;
+import com.sy.sysobackend.exception.ThrowUtils;
+import com.sy.sysobackend.model.dto.user.*;
 import com.sy.sysobackend.model.entity.User;
 import com.sy.sysobackend.model.vo.LoginUserVO;
 import com.sy.sysobackend.model.vo.UserVO;
 import com.sy.sysobackend.service.UserService;
 import com.sy.sysobackend.service.impl.UserServiceImpl;
-import com.sy.sysobackend.annotation.AuthCheck;
-import com.sy.sysobackend.constant.UserConstant;
-import com.sy.sysobackend.exception.BusinessException;
-import com.sy.sysobackend.exception.ThrowUtils;
-import com.sy.sysobackend.model.dto.user.UserAddRequest;
-import com.sy.sysobackend.model.dto.user.UserLoginRequest;
-import com.sy.sysobackend.model.dto.user.UserQueryRequest;
-import com.sy.sysobackend.model.dto.user.UserRegisterRequest;
-import com.sy.sysobackend.model.dto.user.UserUpdateMyRequest;
-import com.sy.sysobackend.model.dto.user.UserUpdateRequest;
-
-import java.util.List;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
@@ -34,15 +23,11 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 用户接口
@@ -287,12 +272,8 @@ public class UserController {
         long size = userQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
-        Page<User> userPage = userService.page(new Page<>(current, size),
-                userService.getQueryWrapper(userQueryRequest));
-        Page<UserVO> userVOPage = new Page<>(current, size, userPage.getTotal());
-        List<UserVO> userVO = userService.getUserVO(userPage.getRecords());
-        userVOPage.setRecords(userVO);
-        return ResultUtils.success(userVOPage);
+
+        return ResultUtils.success(userService.listUserVOByPage(userQueryRequest));
     }
 
     // endregion

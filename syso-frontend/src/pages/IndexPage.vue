@@ -83,6 +83,22 @@ const loadData = (params: any) => {
   });
 };
 
+/**
+ * 加载聚合数据
+ * @param params
+ */
+const loadAllData = (params: any) => {
+  const query = {
+    ...params,
+    searchText: params.text,
+  };
+  myAxios.post("search/all", query).then((res: any) => {
+    postList.value = res.postList;
+    userList.value = res.userList;
+    pictureList.value = res.pictureList;
+  });
+};
+
 const searchParams = ref(initSearchParams);
 
 watchEffect(() => {
@@ -91,7 +107,7 @@ watchEffect(() => {
     text: route.query.text,
     type: route.params.type,
   } as any;
-  loadData(searchParams.value);
+  loadAllData(searchParams.value);
 });
 
 const onSearch = (value: string) => {

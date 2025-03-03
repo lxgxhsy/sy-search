@@ -8,7 +8,6 @@ import com.sy.sysobackend.exception.ThrowUtils;
 import com.sy.sysobackend.model.dto.picture.PictureQueryRequest;
 import com.sy.sysobackend.model.entity.Picture;
 import com.sy.sysobackend.service.PictureService;
-import com.sy.sysobackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,8 +31,6 @@ public class PictureController {
     @Resource
     private PictureService pictureService;
 
-    @Resource
-    private UserService userService;
 
 
     /**
