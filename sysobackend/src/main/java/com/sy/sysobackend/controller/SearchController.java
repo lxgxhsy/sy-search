@@ -65,7 +65,6 @@ public class SearchController {
         }
         String searchText = searchQueryRequest.getSearchText();
         if(searchTypeEnum == null){
-
             CompletableFuture<Page<UserVO>> userTask = CompletableFuture.supplyAsync(() -> {
 
                 UserQueryRequest userQueryRequest = new UserQueryRequest();
